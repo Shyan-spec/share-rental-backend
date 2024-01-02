@@ -8,6 +8,15 @@ const getUsers = () => {
     return response
 }
 
+const getAUser = (id) => {
+
+    const response = User.find({ _id : id }).then((response) => {
+        return response
+    })
+
+    return response
+}
+
 const createUser = (user) => {
     try {
         const newUser = User.insertMany(user)
@@ -19,6 +28,7 @@ const createUser = (user) => {
 }
 
 export {
+    getAUser,
     getUsers,
     createUser
 }

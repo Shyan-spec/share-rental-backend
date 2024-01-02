@@ -1,6 +1,6 @@
 import { Router } from 'express'
 
-import { getUsers, createUser } from '../controllers/user.controller.js'
+import { getUsers, createUser , getAUser} from '../controllers/user.controller.js'
 
 const router = Router()
 
@@ -20,6 +20,23 @@ router.get('/', async function(req, res) {
         });
     }
 })
+
+router.get('/:userId', async function(req, res) {
+    const id = req.params.userId
+    try {
+        const user = await getAUser(id);
+        
+        res.json({
+            user: user
+        });
+    } catch(error) { 
+        console.error(`There was an error`, error); // Correct use of console.log
+        res.status(500).json({ // 500 is more appropriate for server-side errors
+            message: "Internal server error"
+        });
+    }
+})
+
 
 router.post('/', async (req,res) => {
     const userInfo = req.body

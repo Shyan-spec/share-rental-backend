@@ -6,7 +6,10 @@ const itemSchema = new Schema({
     name : {type: String, required: true},
     description : {type: String, required: true},
     price: {type: Number, required: true},
-    quality : [{
+    images: [{ 
+        type: String
+    }],
+    quality: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Quality"
     }],
