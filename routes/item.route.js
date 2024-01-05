@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import multer from 'multer'
 
-import { createAnItem, getAnItem, getItems, bookAnItem, getItemsByUser } from '../controllers/item.controller.js'
+import { createAnItem, getAnItem, getItems, bookAnItem, getItemsByUser,updateAnItem } from '../controllers/item.controller.js'
 
 const router = Router()
 
@@ -46,6 +46,38 @@ router.get('/:itemId', async function(req, res) {
             message: "Internal server error"
         });
     }
+})
+
+router.put('/:itemId', upload.array('images'), async (req, res) => {
+
+    const id = req.params.itemId
+    const newFormData =  req.body
+
+    newFormData.available = (req.body.available === "on");
+
+    if (req.files) {
+        newFormData.images = req.files.map(file => file.path);
+        console.log(req.files)
+    }
+
+    try {
+        const response = await updateAnItem({_id: id }, newFormData)
+        
+       
+        res.json({
+            item : response
+    
+    })
+    }
+    catch(error) {
+        console.error(`There was an error`, error);
+        res.status(500).json({ 
+            message: "Internal server error"
+        });
+    }
+    
+
+
 })
 
 router.get('/user/:userId', async function(req, res) {
@@ -126,4 +158,4 @@ router.post('/book', async (req,res) => {
     }
 })
 
-export default router
+export default router 

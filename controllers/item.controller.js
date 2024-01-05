@@ -28,7 +28,7 @@ const getItemsByUser = async (id) => {
 
   try {
     if (userItems) {
-        console.log(userItems)
+        
       return userItems;
     } else {
       console.log("Owner has no items");
@@ -52,7 +52,6 @@ const createAnItem = async (item) => {
         { $addToSet: { listing: newItem._id } },
         { new: true, useFindAndModify: false }
       );
-      console.log(userUpdate);
     }
 
     return newItem;
@@ -60,6 +59,23 @@ const createAnItem = async (item) => {
     console.log("Error creating new user", error);
   }
 };
+
+const updateAnItem = async(item, updatedData) => {
+
+    try {
+        const selectedItem = await Item.findByIdAndUpdate(item, updatedData,
+            { new: true, useFindAndModify: false });
+
+        if(selectedItem) {
+            console.log(selectedItem);
+            return selectedItem
+        }
+    }
+    catch(error) {
+        console.log(error)
+    }
+
+}
 
 const bookAnItem = async (item) => {
   try {
@@ -78,8 +94,8 @@ const bookAnItem = async (item) => {
         { new: true, useFindAndModify: false }
       );
 
-      console.log(itemUpdate);
-      console.log(userUpdate);
+      
+      
 
       return bookedItem;
     } else {
@@ -91,4 +107,4 @@ const bookAnItem = async (item) => {
   }
 };
 
-export { getAnItem, getItems, createAnItem, bookAnItem, getItemsByUser };
+export { getAnItem, getItems, createAnItem, bookAnItem, getItemsByUser,updateAnItem };
