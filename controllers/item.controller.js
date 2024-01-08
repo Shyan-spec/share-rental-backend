@@ -36,6 +36,7 @@ const getItemsByUser = async (id) => {
   }
 };
 
+
 const createAnItem = async (item) => {
   //For testing purposes NEED TO BE CHANGED IN THE FUTURE
   item.owner = "658892c02f2941b502485764";
