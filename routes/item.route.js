@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import multer from 'multer'
 
-import { createAnItem, getAnItem, getItems, bookAnItem, getItemsByUser,updateAnItem } from '../controllers/item.controller.js'
+import { createAnItem, getAnItem, getItems, bookAnItem, getItemsByUser,updateAnItem, deleteAnItem } from '../controllers/item.controller.js'
 
 const router = Router()
 
@@ -48,36 +48,35 @@ router.get('/:itemId', async function(req, res) {
     }
 })
 
-router.put('/:itemId', upload.array('images'), async (req, res) => {
-
-    const id = req.params.itemId
-    const newFormData =  req.body
-
-    newFormData.available = (req.body.available === "on");
-
-    if (req.files) {
-        newFormData.images = req.files.map(file => file.path);
-        console.log(req.files)
-    }
+router.put('/:itemId', async (req, res) => {
+    const id = req.params.itemId;
+    const updatedData = req.body;
 
     try {
-        const response = await updateAnItem({_id: id }, newFormData)
-        
-       
-        res.json({
-            item : response
-    
-    })
-    }
-    catch(error) {
+        const updatedItem = await updateAnItem(id, updatedData);
+        res.json({ item: updatedItem });
+    } catch (error) {
         console.error(`There was an error`, error);
         res.status(500).json({ 
             message: "Internal server error"
         });
     }
+});
+
+router.delete('/:itemId', async (req, res) => {
+    const id = req.params.itemId
+
+    try {
+        const deletedItem = await deleteAnItem(id);
     
-
-
+        if (deletedItem) {
+          res.status(200).json({ message: 'Item deleted successfully', item: deletedItem });
+        } else {
+          res.status(404).json({ message: 'Item not found' });
+        }
+      } catch (error) {
+        res.status(500).json({ message: 'Internal server error', error: error });
+      }
 })
 
 router.get('/user/:userId', async function(req, res) {

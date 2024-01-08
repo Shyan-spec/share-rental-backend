@@ -2,7 +2,6 @@ import { Item } from "../models/itemSchema.js";
 import { User } from "../models/userSchema.js";
 import { Booking } from "../models/bookingSchema.js";
 
-
 const getItems = async () => {
   const response = await Item.find({});
 
@@ -28,7 +27,6 @@ const getItemsByUser = async (id) => {
 
   try {
     if (userItems) {
-        
       return userItems;
     } else {
       console.log("Owner has no items");
@@ -39,9 +37,8 @@ const getItemsByUser = async (id) => {
 };
 
 const createAnItem = async (item) => {
-
-    //For testing purposes NEED TO BE CHANGED IN THE FUTURE
-    item.owner = "658892c02f2941b502485764";
+  //For testing purposes NEED TO BE CHANGED IN THE FUTURE
+  item.owner = "658892c02f2941b502485764";
 
   try {
     const newItem = await Item.create(item);
@@ -60,22 +57,44 @@ const createAnItem = async (item) => {
   }
 };
 
-const updateAnItem = async(item, updatedData) => {
+const updateAnItem = async (id, updatedData) => {
+  try {
+    // Retrieve the existing item
+    const itemToUpdate = await Item.findById(id);
 
-    try {
-        const selectedItem = await Item.findByIdAndUpdate(item, updatedData,
-            { new: true, useFindAndModify: false });
+    // If there's no existing item, you might want to handle it (e.g., return null or throw an error)
 
-        if(selectedItem) {
-            console.log(selectedItem);
-            return selectedItem
-        }
+    // Update item details and merge images
+    const updatedItem = await Item.findByIdAndUpdate(
+      id,
+      {
+        ...updatedData,
+        images: updatedData.images || itemToUpdate.images,
+      },
+      { new: true, useFindAndModify: false }
+    );
+
+    return updatedItem;
+  } catch (error) {
+    console.log(error);
+    throw error; // Rethrow the error to be handled by the route
+  }
+};
+
+const deleteAnItem = async (id) => {
+  try {
+    const itemToDelete = await Item.findByIdAndDelete({_id: id});
+    console.log(itemToDelete)
+
+    if (itemToDelete) {
+      return itemToDelete;
+    } else {
+      console.log("Item not found");
     }
-    catch(error) {
-        console.log(error)
-    }
-
-}
+  } catch (error) {
+    console.log("Internal Server Error");
+  }
+};
 
 const bookAnItem = async (item) => {
   try {
@@ -94,9 +113,6 @@ const bookAnItem = async (item) => {
         { new: true, useFindAndModify: false }
       );
 
-      
-      
-
       return bookedItem;
     } else {
       throw new Error("Booking creation failed");
@@ -107,4 +123,12 @@ const bookAnItem = async (item) => {
   }
 };
 
-export { getAnItem, getItems, createAnItem, bookAnItem, getItemsByUser,updateAnItem };
+export {
+  getAnItem,
+  getItems,
+  createAnItem,
+  bookAnItem,
+  getItemsByUser,
+  updateAnItem,
+  deleteAnItem
+};
